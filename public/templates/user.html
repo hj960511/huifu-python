@@ -1,0 +1,156 @@
+<!-- public/templates/user_ajax.html -->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>用户管理 - AJAX 版</title>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        th, td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        input, button {
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <h2>用户管理（AJAX）</h2>
+
+    <!-- 新增用户表单 -->
+    <h3>新增用户</h3>
+    <form id="createForm">
+        姓名：<input type="text" id="name" required><br>
+        邮箱：<input type="email" id="email" required><br>
+        年龄：<input type="number" id="age"><br>
+        <button type="submit">添加用户</button>
+    </form>
+
+    <hr>
+
+    <!-- 用户列表 -->
+    <h3>用户列表</h3>
+    <table id="userTable">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>姓名</th>
+                <th>邮箱</th>
+                <th>年龄</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- 数据将由 JS 填充 -->
+        </tbody>
+    </table>
+
+    <!-- 编辑用户弹窗 -->
+    <div id="editModal" style="display:none; border:1px solid #ccc; padding:10px; margin-top:10px;">
+        <h4>编辑用户</h4>
+        <input type="hidden" id="editId">
+        姓名：<input type="text" id="editName"><br>
+        邮箱：<input type="email" id="editEmail"><br>
+        年龄：<input type="number" id="editAge"><br>
+        <button onclick="saveEdit()">保存修改</button>
+        <button onclick="closeEdit()">取消</button>
+    </div>
+
+    <script>
+        // 获取所有用户
+        function fetchUsers() {
+            fetch('/api_users')
+                .then(res => res.json())
+                .then(data => {
+                    const tbody = document.querySelector('#userTable tbody');
+                    tbody.innerHTML = '';
+                    data.forEach(user => {
+                        tbody.innerHTML += `
+                            <tr>
+                                <td>${user.id}</td>
+                                <td>${user.name}</td>
+                                <td>${user.email}</td>
+                                <td>${user.age || ''}</td>
+                                <td>
+                                    <button onclick="editUser(${user.id})">编辑</button>
+                                    <button onclick="deleteUser(${user.id})">删除</button>
+                                </td>
+                            </tr>
+                        `;
+                    });
+                });
+        }
+
+        // 添加用户
+        document.getElementById('createForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const age = document.getElementById('age').value;
+
+            fetch('/api_users/create', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, email, age })
+            }).then(res => res.json())
+              .then(() => {
+                  fetchUsers();
+                  this.reset();
+              });
+        });
+
+        // 删除用户
+        function deleteUser(id) {
+            if (!confirm('确定删除？')) return;
+            fetch(`/api_users/delete/${id}`, {
+                method: 'DELETE'
+            }).then(() => fetchUsers());
+        }
+
+        // 编辑用户 - 显示模态框
+        function editUser(id) {
+            fetch(`/api_users/get/${id}`)
+                .then(res => res.json())
+                .then(user => {
+                    document.getElementById('editId').value = user.id;
+                    document.getElementById('editName').value = user.name;
+                    document.getElementById('editEmail').value = user.email;
+                    document.getElementById('editAge').value = user.age;
+                    document.getElementById('editModal').style.display = 'block';
+                });
+        }
+
+        // 保存编辑
+        function saveEdit() {
+            const id = document.getElementById('editId').value;
+            const name = document.getElementById('editName').value;
+            const email = document.getElementById('editEmail').value;
+            const age = document.getElementById('editAge').value;
+
+            fetch(`/api_users/update/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, email, age })
+            }).then(() => {
+                fetchUsers();
+                closeEdit();
+            });
+        }
+
+        // 关闭编辑框
+        function closeEdit() {
+            document.getElementById('editModal').style.display = 'none';
+        }
+
+        // 初始化加载数据
+        window.onload = fetchUsers;
+    </script>
+</body>
+</html>

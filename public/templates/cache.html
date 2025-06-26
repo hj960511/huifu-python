@@ -1,0 +1,65 @@
+<!-- public/templates/cache.html -->
+
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>缓存操作</title>
+</head>
+<body>
+    <h1>缓存操作页面</h1>
+
+    <form id="cache-form">
+        <label for="key">Key:</label>
+        <input type="text" id="key" name="key" required><br><br>
+
+        <label for="value">Value:</label>
+        <input type="text" id="value" name="value" required><br><br>
+
+        <label for="ttl">TTL (秒):</label>
+        <input type="number" id="ttl" name="ttl"><br><br>
+
+        <button type="submit">设置缓存</button>
+    </form>
+
+    <hr>
+
+    <div>
+        <h3>获取缓存</h3>
+        <input type="text" id="getKey" placeholder="输入 Key">
+        <button onclick="getKeyVal()">获取</button>
+        <p id="result"></p>
+    </div>
+
+    <script>
+        document.getElementById('cache-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            fetch('/api/cache/set', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(Object.fromEntries(formData))
+            })
+            .then(res => res.json())
+            .then(data => {
+                alert("缓存已设置");
+            });
+        });
+
+        function getKeyVal() {
+            const key = document.getElementById('getKey').value;
+            fetch(`/api/cache/get/${key}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.error) {
+                        alert(data.error);
+                    } else {
+                        document.getElementById('result').innerText = JSON.stringify(data);
+                    }
+                });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,126 @@
+<!-- public/templates/upload.html -->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>文件上传管理</title>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        th, td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        input, button {
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <h2>文件上传管理</h2>
+
+    <!-- 文件上传表单 -->
+    <h3>上传新文件</h3>
+    <form id="uploadForm" enctype="multipart/form-data">
+        选择文件：<input type="file" id="file" name="file" required><br>
+        <button type="submit">上传文件</button>
+    </form>
+
+    <hr>
+
+    <!-- 已上传文件列表 -->
+    <h3>已上传文件</h3>
+    <table id="uploadTable">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>文件名</th>
+                <th>文件类型</th>
+                <th>大小（字节）</th>
+                <th>上传时间</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- 数据将由 JS 填充 -->
+        </tbody>
+    </table>
+
+    <script>
+        // 获取所有上传的文件
+        function fetchUploads() {
+            fetch('/api_upload/uploads')
+                .then(res => res.json())
+                .then(data => {
+                    const tbody = document.querySelector('#uploadTable tbody');
+                    tbody.innerHTML = '';
+                    data.forEach(upload => {
+                        tbody.innerHTML += `
+                            <tr>
+                                <td>${upload.id}</td>
+                                <td>${upload.filename}</td>
+                                <td>${upload.file_type}</td>
+                                <td>${upload.size}</td>
+                                <td>${new Date(upload.upload_time).toLocaleString()}</td>
+                                <td>
+                                  <a href="/api_upload/download/${upload.md5}" target="_blank">下载</a>
+                                    <button onclick="deleteFile('${upload.md5}')">删除</button>
+                                </td>
+                            </tr>
+                        `;
+                    });
+                });
+        }
+
+        // 上传文件
+        document.getElementById('uploadForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData();
+            const fileInput = document.getElementById('file');
+            if (fileInput.files.length === 0) {
+                alert('请选择一个文件');
+                return;
+            }
+            formData.append('file', fileInput.files[0]);
+
+            fetch('/api_upload/upload', {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => res.json())
+            .then(() => {
+                fetchUploads();
+                fileInput.value = ''; // 清空文件输入框
+            })
+            .catch(err => {
+                console.error('上传失败:', err);
+                alert('上传失败');
+            });
+        });
+
+        // 删除文件
+        function deleteFile(md5) {
+            if (!confirm('确定删除该文件？')) return;
+            fetch(`/api_upload/delete/${md5}`, {
+                method: 'DELETE'
+            })
+            .then(res => res.json())
+            .then(result => {
+                if (result.success) {
+                    fetchUploads();
+                } else {
+                    alert('删除失败: ' + result.message);
+                }
+            });
+        }
+
+        // 初始化加载数据
+        window.onload = fetchUploads;
+    </script>
+</body>
+</html>

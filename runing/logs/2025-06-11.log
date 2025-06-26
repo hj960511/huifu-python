@@ -1,0 +1,28 @@
+2025-06-11 13:30:44 - root - INFO - Huifu 运行成功
+2025-06-11 13:30:44 - root - INFO - ✅ 已导入模型：model.test
+2025-06-11 13:30:44 - root - INFO - ✅ 已导入模型：model.upload
+2025-06-11 13:30:44 - root - INFO - ✅ 已导入模型：model.user
+2025-06-11 13:30:44 - root - INFO - ✅ 数据库连接成功！
+2025-06-11 13:30:44 - root - INFO - ✅ 表已存在：test
+2025-06-11 13:30:44 - root - INFO - ✅ 表已存在：upload
+2025-06-11 13:30:44 - root - INFO - ✅ 表已存在：user
+2025-06-11 13:30:46 - root - INFO - ✅ Redis 连接成功！
+2025-06-11 13:30:46 - root - INFO - ✅ 当前缓存引擎：本地文件
+2025-06-11 13:30:46 - root - INFO - ✅ 已注册蓝图：api_cache -> blue.api.api_cache (URL前缀: /api/)
+2025-06-11 13:30:46 - root - INFO - ✅ 已注册蓝图：api_users -> blue.api.api_users (URL前缀: /api_users)
+2025-06-11 13:30:46 - root - INFO - ✅ 已注册蓝图：api_upload -> blue.api.api_upload (URL前缀: /api_upload)
+2025-06-11 13:30:46 - root - INFO - ✅ 已注册蓝图：web_home -> blue.web.web_home (URL前缀: /)
+2025-06-11 13:30:46 - root - INFO - ✅ 已注册蓝图：web_cache -> blue.web.web_cache (URL前缀: /cache)
+2025-06-11 13:30:46 - root - INFO - ✅ 已注册蓝图：web_user -> blue.web.web_user (URL前缀: /user)
+2025-06-11 13:30:46 - root - INFO - ✅ 已注册蓝图：web_upload -> blue.web.web_upload (URL前缀: /upload)
+2025-06-11 13:30:46 - root - INFO - b" * Serving Flask app 'run'"
+2025-06-11 13:30:46 - root - INFO - b' * Debug mode: on'
+2025-06-11 13:30:46 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-06-11 13:30:46 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-06-11 13:30:49 - werkzeug - INFO - 127.0.0.1 - - [11/Jun/2025 13:30:49] "GET / HTTP/1.1" 200 -
+2025-06-11 13:30:52 - werkzeug - INFO - 127.0.0.1 - - [11/Jun/2025 13:30:52] "GET /cache/ HTTP/1.1" 200 -
+2025-06-11 13:30:54 - werkzeug - INFO - 127.0.0.1 - - [11/Jun/2025 13:30:54] "GET /user/ HTTP/1.1" 200 -
+2025-06-11 13:30:54 - werkzeug - INFO - 127.0.0.1 - - [11/Jun/2025 13:30:54] "GET /api_users/ HTTP/1.1" 200 -
+2025-06-11 13:30:57 - werkzeug - INFO - 127.0.0.1 - - [11/Jun/2025 13:30:57] "GET /upload/ HTTP/1.1" 200 -
+2025-06-11 13:30:57 - werkzeug - INFO - 127.0.0.1 - - [11/Jun/2025 13:30:57] "GET /api_upload/uploads HTTP/1.1" 200 -
